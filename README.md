@@ -144,7 +144,3 @@ using back to Cockroach Labs. To disable this, set
      - [overlaps_left (&<), overlaps_right (&>), overlaps_above (&<|),
        overlaps_below (&>|)](https://github.com/cockroachdb/cockroach/issues/57098)
      - [strictly_above (|>>), strictly_below (<<|)](https://github.com/cockroachdb/cockroach/issues/57095)
-
- ## Known issues and limitations in CockroachDB 23.1.x and earlier
-
-- CockroachDB doesn't support by ordering by JSON.
