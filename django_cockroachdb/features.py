@@ -161,6 +161,7 @@ class DatabaseFeatures(PostgresDatabaseFeatures):
             'many_to_one.tests.ManyToOneTests.test_get_prefetch_querysets_reverse_invalid_querysets_length',
             'migrations.test_operations.OperationTests.test_smallfield_autofield_foreignfield_growth',
             'migrations.test_operations.OperationTests.test_smallfield_bigautofield_foreignfield_growth',
+            'schema.tests.SchemaTests.test_alter_smallint_pk_to_smallautofield_pk',
             # unexpected unique index in pg_constraint query:
             # https://github.com/cockroachdb/cockroach/issues/61098
             'introspection.tests.IntrospectionTests.test_get_constraints_unique_indexes_orders',
@@ -189,7 +190,7 @@ class DatabaseFeatures(PostgresDatabaseFeatures):
                 'migrations.test_operations.OperationTests.test_alter_field_reloads_state_on_fk_with_to_field_target_changes',  # noqa
                 'migrations.test_operations.OperationTests.test_rename_field_reloads_state_on_fk_target_changes',
                 # unknown signature: concat(varchar, int) (returning <string>)
-                'migrations.test_operations.OperationTests.test_add_generate_field',
+                'migrations.test_operations.OperationTests.test_add_generated_field',
                 # concat(): unknown signature: concat(string, int2) (desired <string>)
                 'db_functions.text.test_concat.ConcatTests.test_concat_non_str',
             })
