@@ -1,6 +1,7 @@
 from django.contrib.gis.db.backends.postgis.features import (
     DatabaseFeatures as PostGISFeatures,
 )
+from django.db.backends.postgresql.psycopg_any import is_psycopg3
 from django.utils.functional import cached_property
 
 from django_cockroachdb.features import DatabaseFeatures as CockroachFeatures
@@ -73,6 +74,15 @@ class DatabaseFeatures(CockroachFeatures, PostGISFeatures):
             # https://github.com/cockroachdb/cockroach/issues/47420#issuecomment-969578772
             'gis_tests.gis_migrations.test_operations.OperationTests.test_add_3d_field_opclass',
         })
+        if is_psycopg3:
+            expected_failures.update({
+                # QuerySet.bulk_create() doesn't work with geometries after
+                # https://github.com/django/django/commit/a16eedcf9c69d8a11d94cac1811018c5b996d491
+                # could not parse geometry: error parsing EWKB hex: encoding/hex:
+                # invalid byte: U+003A ':'
+                # https://github.com/cockroachdb/cockroach/issues/138140
+                'gis_tests.geoapp.test_functions.GISFunctionsTests.test_area_lookups',
+            })
         if self.uses_server_side_binding:
             expected_failures.update({
                 # unknown signature: st_scale(geometry, int, int)

@@ -146,6 +146,10 @@ class DatabaseFeatures(PostgresDatabaseFeatures):
             'schema.tests.SchemaTests.test_text_field_with_db_index_to_fk',
             # CockroachDB doesn't support dropping the primary key.
             'schema.tests.SchemaTests.test_alter_int_pk_to_int_unique',
+            # unimplemented: primary key dropped without subsequent addition of
+            # new primary key in same transaction
+            # https://github.com/cockroachdb/cockroach/issues/48026
+            'migrations.test_operations.OperationTests.test_composite_pk_operations',
             # CockroachDB doesn't support changing the primary key of table.
             # psycopg.errors.InvalidColumnReference: column "id" is referenced
             # by the primary key
@@ -207,6 +211,7 @@ class DatabaseFeatures(PostgresDatabaseFeatures):
                 # https://github.com/cockroachdb/cockroach/issues/91396
                 'backends.tests.EscapingChecks.test_parameter_escaping',
                 'backends.tests.EscapingChecksDebug.test_parameter_escaping',
+                'composite_pk.test_update.CompositePKUpdateTests.test_bulk_update_comments',
                 'constraints.tests.CheckConstraintTests.test_database_default',
                 'expressions.tests.BasicExpressionsTests.test_annotate_values_filter',
                 'expressions_case.tests.CaseDocumentationExamples.test_lookup_example',
