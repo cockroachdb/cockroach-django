@@ -92,7 +92,7 @@ By default, CockroachDB sends the version of django-cockroachdb that you're
 using back to Cockroach Labs. To disable this, set
 `DISABLE_COCKROACHDB_TELEMETRY = True` in your Django settings.
 
-## Known issues and limitations in CockroachDB 24.3.x and earlier
+## Known issues and limitations in CockroachDB 25.1.x and earlier
 
 - CockroachDB [can't disable constraint checking](https://github.com/cockroachdb/cockroach/issues/19444),
   which means certain things in Django like forward references in fixtures
@@ -102,12 +102,6 @@ using back to Cockroach Labs. To disable this, set
 
    - [changing column type if it's part of an index](https://go.crdb.dev/issue/47636)
    - dropping or changing a table's primary key
-   - CockroachDB executes `ALTER COLUMN` queries asynchronously which is at
-     odds with Django's assumption that the database is altered before the next
-     migration operation begins. CockroachDB will give an error like
-     `unimplemented: table <...> is currently undergoing a schema change` if a
-     later operation tries to modify the table before the asynchronous query
-     finishes. A future version of CockroachDB [may fix this](https://github.com/cockroachdb/cockroach/issues/47137).
 
 - The `Field.db_comment` and `Meta.db_table_comment` options aren't supported
   due to [poor performance](https://github.com/cockroachdb/cockroach/issues/95068).
@@ -144,6 +138,15 @@ using back to Cockroach Labs. To disable this, set
      - [overlaps_left (&<), overlaps_right (&>), overlaps_above (&<|),
        overlaps_below (&>|)](https://github.com/cockroachdb/cockroach/issues/57098)
      - [strictly_above (|>>), strictly_below (<<|)](https://github.com/cockroachdb/cockroach/issues/57095)
+
+## Known issues and limitations in CockroachDB 24.3.x and earlier
+
+- CockroachDB executes `ALTER COLUMN` queries asynchronously which is at
+  odds with Django's assumption that the database is altered before the next
+  migration operation begins. CockroachDB will give an error like
+  `unimplemented: table <...> is currently undergoing a schema change` if a
+  later operation tries to modify the table before the asynchronous query
+  finishes.
 
  ## Known issues and limitations in CockroachDB 23.1.x and earlier
 
