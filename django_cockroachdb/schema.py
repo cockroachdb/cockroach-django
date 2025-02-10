@@ -55,8 +55,12 @@ class DatabaseSchemaEditor(PostgresDatabaseSchemaEditor):
                      old_db_params, new_db_params, strict=False):
         # ALTER COLUMN TYPE is experimental.
         # https://github.com/cockroachdb/cockroach/issues/49329
-        if (old_type != new_type or
-                getattr(old_field, 'db_collation', None) != getattr(new_field, 'db_collation', None)):
+        if (
+            not self.connection.features.is_cockroachdb_25_1 and (
+                old_type != new_type or
+                getattr(old_field, 'db_collation', None) != getattr(new_field, 'db_collation', None)
+            )
+        ):
             self.execute('SET enable_experimental_alter_column_type_general = true')
         # Skip to the base class to avoid trying to add or drop
         # PostgreSQL-specific LIKE indexes.

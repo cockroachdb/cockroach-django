@@ -88,6 +88,10 @@ class DatabaseFeatures(PostgresDatabaseFeatures):
         return self.connection.cockroachdb_version >= (24, 3)
 
     @cached_property
+    def is_cockroachdb_25_1(self):
+        return self.connection.cockroachdb_version >= (25, 1)
+
+    @cached_property
     def django_test_expected_failures(self):
         expected_failures = super().django_test_expected_failures
         expected_failures.update({
@@ -291,6 +295,10 @@ class DatabaseFeatures(PostgresDatabaseFeatures):
                     # https://github.com/cockroachdb/cockroach/pull/127098#issuecomment-2492652084
                     "model_fields.test_uuid.TestQuerying.test_filter_with_expr",
                 })
+            if self.is_cockroachdb_25_1:
+                expected_failures.update({
+                    'expressions_case.tests.CaseExpressionTests.test_filter_with_expression_as_condition',
+                })
         else:
             expected_failures.update({
                 # Unsupported query: unsupported binary operator: <int> / <int>:
@@ -304,13 +312,6 @@ class DatabaseFeatures(PostgresDatabaseFeatures):
     def django_test_skips(self):
         skips = super().django_test_skips
         skips.update({
-            # https://github.com/cockroachdb/cockroach/issues/47137
-            # These tests only fail sometimes, e.g.
-            # https://github.com/cockroachdb/cockroach/issues/65691
-            'ALTER COLUMN fails if previous asynchronous ALTER COLUMN has not finished.': {
-                'schema.tests.SchemaTests.test_alter_field_db_collation',
-                'schema.tests.SchemaTests.test_alter_field_type_and_db_collation',
-            },
             # https://github.com/cockroachdb/django-cockroachdb/issues/153#issuecomment-664697963
             'CockroachDB has more restrictive blocking than other databases.': {
                 'select_for_update.tests.SelectForUpdateTests.test_block',
@@ -341,4 +342,14 @@ class DatabaseFeatures(PostgresDatabaseFeatures):
                 'admin_views.test_multidb.ViewOnSiteTests.test_contenttype_in_separate_db',
             },
         })
+        if not self.is_cockroachdb_25_1:
+            skips.update({
+                # https://github.com/cockroachdb/cockroach/issues/47137
+                # These tests only fail sometimes, e.g.
+                # https://github.com/cockroachdb/cockroach/issues/65691
+                'ALTER COLUMN fails if previous asynchronous ALTER COLUMN has not finished.': {
+                    'schema.tests.SchemaTests.test_alter_field_db_collation',
+                    'schema.tests.SchemaTests.test_alter_field_type_and_db_collation',
+                },
+            })
         return skips
