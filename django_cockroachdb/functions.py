@@ -6,7 +6,8 @@ from django.db.models import (
 from django.db.models.expressions import When
 from django.db.models.functions import (
     ACos, ASin, ATan, ATan2, Cast, Ceil, Coalesce, Collate, Cos, Cot, Degrees,
-    Exp, Floor, JSONObject, Ln, Log, Radians, Round, Sin, Sqrt, StrIndex, Tan,
+    Exp, Floor, JSONArray, JSONObject, Ln, Log, Radians, Round, Sin, Sqrt,
+    StrIndex, Tan,
 )
 
 
@@ -76,6 +77,7 @@ def register_functions():
         func.as_cockroachdb = float_cast
     Coalesce.as_cockroachdb = coalesce
     Collate.as_cockroachdb = collate
+    JSONArray.as_cockroachdb = JSONArray.as_postgresql
     JSONObject.as_cockroachdb = JSONObject.as_postgresql
     Round.as_cockroachdb = round_cast
     StrIndex.as_cockroachdb = StrIndex.as_postgresql
