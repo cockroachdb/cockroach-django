@@ -297,6 +297,8 @@ class DatabaseFeatures(PostgresDatabaseFeatures):
                 })
             if self.is_cockroachdb_25_1:
                 expected_failures.update({
+                    # psycopg.errors.IndeterminateDatatype: could not determine
+                    # data type of placeholder $1
                     'expressions_case.tests.CaseExpressionTests.test_filter_with_expression_as_condition',
                 })
         else:

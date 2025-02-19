@@ -54,10 +54,10 @@ jobs:
             use_psycopg2: psycopg2
           - crdb-version: v24.3.2
             use_server_side_binding: server_side_binding
-          - crdb-version: v25.1.0-beta.3
-          - crdb-version: v25.1.0-beta.3
+          - crdb-version: v25.1.0-rc.1
+          - crdb-version: v25.1.0-rc.1
             use_psycopg2: psycopg2
-          - crdb-version: v25.1.0-beta.3
+          - crdb-version: v25.1.0-rc.1
             use_server_side_binding: server_side_binding
           # Uncomment to enable testing of CockroachDB nightly.
           - crdb-version: LATEST
