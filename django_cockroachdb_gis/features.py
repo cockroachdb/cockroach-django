@@ -74,7 +74,7 @@ class DatabaseFeatures(CockroachFeatures, PostGISFeatures):
             # https://github.com/cockroachdb/cockroach/issues/47420#issuecomment-969578772
             'gis_tests.gis_migrations.test_operations.OperationTests.test_add_3d_field_opclass',
         })
-        if is_psycopg3:
+        if is_psycopg3 and not self.is_cockroachdb_24_1:
             expected_failures.update({
                 # QuerySet.bulk_create() doesn't work with geometries after
                 # https://github.com/django/django/commit/a16eedcf9c69d8a11d94cac1811018c5b996d491
