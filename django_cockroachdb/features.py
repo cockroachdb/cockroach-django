@@ -5,7 +5,7 @@ from django.utils.functional import cached_property
 
 
 class DatabaseFeatures(PostgresDatabaseFeatures):
-    minimum_database_version = (23, 1)
+    minimum_database_version = (23, 2)
 
     # Cloning databases doesn't speed up tests.
     # https://github.com/cockroachdb/django-cockroachdb/issues/206
@@ -74,10 +74,6 @@ class DatabaseFeatures(PostgresDatabaseFeatures):
         # Not supported: https://github.com/cockroachdb/cockroach/issues/111091
         'virtual': None,
     }
-
-    @cached_property
-    def is_cockroachdb_23_2(self):
-        return self.connection.cockroachdb_version >= (23, 2)
 
     @cached_property
     def is_cockroachdb_24_1(self):
@@ -150,6 +146,10 @@ class DatabaseFeatures(PostgresDatabaseFeatures):
             'schema.tests.SchemaTests.test_text_field_with_db_index_to_fk',
             # CockroachDB doesn't support dropping the primary key.
             'schema.tests.SchemaTests.test_alter_int_pk_to_int_unique',
+            # unimplemented: primary key dropped without subsequent addition of
+            # new primary key in same transaction
+            # https://github.com/cockroachdb/cockroach/issues/48026
+            'migrations.test_operations.OperationTests.test_composite_pk_operations',
             # CockroachDB doesn't support changing the primary key of table.
             # psycopg.errors.InvalidColumnReference: column "id" is referenced
             # by the primary key
@@ -165,6 +165,7 @@ class DatabaseFeatures(PostgresDatabaseFeatures):
             'many_to_one.tests.ManyToOneTests.test_get_prefetch_querysets_reverse_invalid_querysets_length',
             'migrations.test_operations.OperationTests.test_smallfield_autofield_foreignfield_growth',
             'migrations.test_operations.OperationTests.test_smallfield_bigautofield_foreignfield_growth',
+            'schema.tests.SchemaTests.test_alter_smallint_pk_to_smallautofield_pk',
             # unexpected unique index in pg_constraint query:
             # https://github.com/cockroachdb/cockroach/issues/61098
             'introspection.tests.IntrospectionTests.test_get_constraints_unique_indexes_orders',
@@ -193,31 +194,9 @@ class DatabaseFeatures(PostgresDatabaseFeatures):
                 'migrations.test_operations.OperationTests.test_alter_field_reloads_state_on_fk_with_to_field_target_changes',  # noqa
                 'migrations.test_operations.OperationTests.test_rename_field_reloads_state_on_fk_target_changes',
                 # unknown signature: concat(varchar, int) (returning <string>)
-                'migrations.test_operations.OperationTests.test_add_generate_field',
+                'migrations.test_operations.OperationTests.test_add_generated_field',
                 # concat(): unknown signature: concat(string, int2) (desired <string>)
                 'db_functions.text.test_concat.ConcatTests.test_concat_non_str',
-            })
-        if not self.is_cockroachdb_23_2:
-            expected_failures.update({
-                # cannot index a json element:
-                # https://github.com/cockroachdb/cockroach/issues/35706
-                'schema.tests.SchemaTests.test_func_index_json_key_transform',
-                # ordering by JSON isn't supported:
-                # https://github.com/cockroachdb/cockroach/issues/35706
-                'db_functions.comparison.test_json_object.JSONObjectTests.test_order_by_key',
-                'db_functions.comparison.test_json_object.JSONObjectTests.test_order_by_nested_key',
-                'expressions_window.tests.WindowFunctionTests.test_key_transform',
-                'model_fields.test_jsonfield.TestQuerying.test_deep_distinct',
-                'model_fields.test_jsonfield.TestQuerying.test_order_grouping_custom_decoder',
-                'model_fields.test_jsonfield.TestQuerying.test_ordering_by_transform',
-                'model_fields.test_jsonfield.TestQuerying.test_ordering_grouping_by_key_transform',
-                # unsupported comparison operator: <jsonb> > <string>:
-                # https://github.com/cockroachdb/cockroach/issues/49144
-                'model_fields.test_jsonfield.TestQuerying.test_deep_lookup_transform',
-                # DataError: incompatible COALESCE expressions: expected pi() to be
-                # of type decimal, found type float
-                # https://github.com/cockroachdb/cockroach/issues/73587#issuecomment-988408190
-                'aggregation.tests.AggregateTestCase.test_aggregation_default_using_decimal_from_database',
             })
         if self.is_cockroachdb_24_1:
             # USING cast required: https://github.com/cockroachdb/cockroach/issues/82416#issuecomment-2029803229
@@ -232,6 +211,7 @@ class DatabaseFeatures(PostgresDatabaseFeatures):
                 # https://github.com/cockroachdb/cockroach/issues/91396
                 'backends.tests.EscapingChecks.test_parameter_escaping',
                 'backends.tests.EscapingChecksDebug.test_parameter_escaping',
+                'composite_pk.test_update.CompositePKUpdateTests.test_bulk_update_comments',
                 'constraints.tests.CheckConstraintTests.test_database_default',
                 'expressions.tests.BasicExpressionsTests.test_annotate_values_filter',
                 'expressions_case.tests.CaseDocumentationExamples.test_lookup_example',

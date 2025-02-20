@@ -5,5 +5,5 @@ from django_cockroachdb.schema import (
 )
 
 
-class DatabaseSchemaEditor(CockroachSchemaEditor, PostGISSchemaEditor):
+class DatabaseSchemaEditor(PostGISSchemaEditor, CockroachSchemaEditor):
     pass
